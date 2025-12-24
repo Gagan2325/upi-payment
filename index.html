@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>UPI Scanner</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+
+<h2>Scan UPI QR</h2>
+
+<div id="reader" style="width:300px"></div>
+
+<pre id="result"></pre>
+
+<button id="payBtn" style="display:none; padding:10px 20px; font-size:16px;">
+  Pay Now
+</button>
+
+<script>
+const result = document.getElementById("result");
+const payBtn = document.getElementById("payBtn");
+
+let scannedUpiUrl = "";
+
+function onScanSuccess(decodedText) {
+  scannedUpiUrl = decodedText;
+  result.innerText = decodedText;
+
+  // Show Pay button
+  payBtn.style.display = "inline-block";
+
+  // Send to backend (optional)
+  fetch("http://localhost:3000/api/upi/parse", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ qrText: decodedText })
+  })
+  .then(res => res.json())
+  .then(data => console.log("Parsed UPI:", data));
+}
+
+// Pay Now click
+payBtn.onclick = () => {
+  if (!scannedUpiUrl.startsWith("upi://pay")) {
+    alert("Invalid UPI QR");
+    return;
+  }
+
+  // Trigger UPI intent
+  window.location.href = scannedUpiUrl;
+};
+
+new Html5Qrcode("reader").start(
+  { facingMode: "environment" },
+  { fps: 10, qrbox: 250 },
+  onScanSuccess
+);
+</script>
+
+</body>
+</html>
