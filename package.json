@@ -1,7 +1,9 @@
 {
-  "name": "upi-scanner",
+  "name": "upi-backend",
   "type": "module",
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "cors": "^2.8.5",
+    "uuid": "^9.0.1"
   }
 }
